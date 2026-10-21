@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AA3 - Total de compras por cliente</title>
+    <!-- Librería Chart.js desde CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <h1>Total de compras por cliente</h1>
+    <div style="max-width: 800px;">
+        <canvas id="grafico"></canvas>
+    </div>
+
+    <script>
+        // 1. Datos simulados: descuento, precioFinal y estado se calculan más abajo
+        const clientes = [
+            {
+                id: 1,
+                nombre: "José Manuel Acosta",
+                fechaNacimiento: "1985-03-15",
+                direcciones: [
+                    { pais: "España", ciudad: "Teror", direccionElegida: true },
+                    { pais: "España", ciudad: "Barcelona", direccionElegida: false }
+                ],
+                ordenes: [
+                    { producto: "Laptop", fechaOrden: "2025-01-10", precio: 1000 },
+                    { producto: "Mouse", fechaOrden: "2025-03-15", precio: 50 } // su cumpleaños
+                ]
+            },
+            {
+                id: 2,
+                nombre: "Gara Pérez",
+                fechaNacimiento: "2015-06-20",
+                direcciones: [
+                    { pais: "España", ciudad: "Agüimes", direccionElegida: true }
+                ],
+                ordenes: [
+                    { producto: "Tablet", fechaOrden: "2025-02-05", precio: 300 }, // 9 años
+                    { producto: "Libro", fechaOrden: "2025-06-20", precio: 20 }    // 10 años + cumpleaños
+                ]
+            },
+            {
+                id: 3,
+                nombre: "Carlos Martel",
+                fechaNacimiento: "2009-11-02",
+                direcciones: [
+                    { pais: "España", ciudad: "Telde", direccionElegida: true }
+                ],
+                ordenes: [
+                    { producto: "Auriculares", fechaOrden: "2025-01-15", precio: 80 }, // 15 años
+                    { producto: "Teclado", fechaOrden: "2025-11-02", precio: 60 }      // 16 años + cumpleaños
+                ]
+            },
+            {
+                id: 4,
+                nombre: "Eva Santana",
+                fechaNacimiento: "1958-09-10",
+                direcciones: [
+                    { pais: "España", ciudad: "Vecindario", direccionElegida: true }
+                ],
+                ordenes: [
+                    { producto: "Monitor", fechaOrden: "2025-02-12", precio: 200 }, // 66 años
+                    { producto: "Webcam", fechaOrden: "2025-03-01", precio: 70 }
+                ]
+            }
+        ];
+
+        // Edad del cliente en la fecha de la orden (se trabaja con el texto ISO "AAAA-MM-DD")
+        function calcularEdad(fechaNacimiento, fechaOrden) {
+            const [anioN, mesN, diaN] = fechaNacimiento.split("-").map(Number);
+            const [anioO, mesO, diaO] = fechaOrden.split("-").map(Number);
+
+            let edad = anioO - anioN;
+            // Si aún no ha cumplido años ese año, restamos uno
+            if (mesO < mesN || (mesO === mesN && diaO < diaN)) {
+                edad--;
+            }
+            return edad;
+        }
+
+        // Comprobar si coincide con su cumpleaños
+        function esCumpleanios(fechaNacimiento, fechaOrden) {
+            return fechaNacimiento.slice(5) === fechaOrden.slice(5);
+        }
+
+        // Descuento según edad (+10% adicional si es su cumpleaños)
+        function calcularDescuento(edad, cumpleanios) {
+            let descuento = 0;
+            if (edad < 13) {
+                descuento = 0.40;
+            } else if (edad <= 18) {
+                descuento = 0.15;
+            } else if (edad >= 65) {
+                descuento = 0.25;
+            }
+            if (cumpleanios) {
+                descuento += 0.10;
+            }
+            return descuento;
+        }
+
+        // Completamos cada orden con descuento, precioFinal y estado aleatorio
+        const estados = ["Pendiente", "Enviado", "Entregado"];
+
+        clientes.forEach(cliente => {
+            cliente.ordenes.forEach(orden => {
+                const edad = calcularEdad(cliente.fechaNacimiento, orden.fechaOrden);
+                const cumple = esCumpleanios(cliente.fechaNacimiento, orden.fechaOrden);
+
+                orden.descuento = calcularDescuento(edad, cumple);
+                // Redondeamos a 2 decimales
+                orden.precioFinal = Math.round(orden.precio * (1 - orden.descuento) * 100) / 100;
+                orden.estado = estados[Math.floor(Math.random() * estados.length)];
+            });
+        });
+
+        console.log(clientes);
+
+        // Total gastado por cada cliente
+        const nombres = clientes.map(c => c.nombre);
+        const totales = clientes.map(c =>
+            c.ordenes.reduce((suma, orden) => suma + orden.precioFinal, 0)
+        );
+
+        // Gráfico de barras vertical con Chart.js
+        new Chart(document.getElementById("grafico"), {
+            type: "bar",
+            data: {
+                labels: nombres,
+                datasets: [{
+                    label: "Total de compras (€)",
+                    data: totales,
+                    backgroundColor: "rgba(54, 162, 235, 0.6)",
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: "Euros (€)" }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

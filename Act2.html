@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calificaciones con metadatos personalizados</title>
+    <script>
+        // Valor a probar: "diez" (metadatos), "15" (rango), "8" (éxito)
+        let entradaNota = "diez";
+
+        try {
+            // Convertimos la entrada a número
+            let nota = Number(entradaNota);
+
+            // Si no es un número, lanzamos un error con metadatos
+            if (isNaN(nota)) {
+                const error = new Error();
+                error.name = "ErrorDeValidacion";
+                error.respuesta = {
+                    estado: 401,
+                    argumentos: "Nota recibida: " + entradaNota,
+                    datos: { detalle: "La nota no se puede convertir a número." }
+                };
+                throw error;
+            }
+
+            // Si está fuera de 0-10, lanzamos un RangeError
+            if (nota < 0 || nota > 10) {
+                throw new RangeError("La nota debe estar entre 0 y 10.");
+            }
+
+            // Si descomento la siguiente línea compruebo el caso 4 de la actividad
+            // variableInexistente++;
+
+            // Si la nota es válida muestro el resultado
+            let estado = nota >= 5 ? "Aprobado" : "Suspenso";
+            alert("Nota validada: " + nota + " - Estado: " + estado);
+
+        } catch (error) {
+            if (error.respuesta) {
+                // Error con metadatos personalizados
+                console.error("Metadatos del error:", error.respuesta);
+                alert("[Error " + error.respuesta.estado + "]: " + error.respuesta.datos.detalle);
+            } else if (error instanceof RangeError) {
+                // Nota fuera de rango
+                alert("[Error de rango]: " + error.message);
+            } else {
+                // Error no previsto
+                console.warn("Error inesperado.");
+                throw error;
+            }
+        }
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>
