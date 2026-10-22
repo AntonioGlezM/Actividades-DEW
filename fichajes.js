@@ -8,15 +8,13 @@ class ClubFutbol {
         this.#presupuesto = presupuestoInicial < 0 ? 0 : presupuestoInicial;
     }
 
-    // Getter: se usa como propiedad (club.presupuesto), solo lectura aparente
     get presupuesto() {
         return this.#presupuesto;
     }
 
-    // Setter: valida antes de cambiar el valor
     set presupuesto(valor) {
         if (valor < 0) {
-            console.error("Error: el presupuesto no puede ser negativo. Cambio bloqueado.");
+            console.error("El presupuesto no puede ser negativo. Cambio denegado.");
             return;
         }
         this.#presupuesto = valor;

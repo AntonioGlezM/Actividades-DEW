@@ -5,7 +5,6 @@ interface IEntrenamiento {
     ejecutarRutina(duracionMinutos: number): void;
 }
 
-// "public intensidad" en el constructor declara y asigna la propiedad a la vez
 class EntrenamientoCarrera implements IEntrenamiento {
     constructor(public intensidad: string) { }
 
@@ -14,7 +13,7 @@ class EntrenamientoCarrera implements IEntrenamiento {
     }
 
     ejecutarRutina(duracionMinutos: number): void {
-        console.log(`Carrera: ${duracionMinutos} min de running a intensidad ${this.intensidad}.`);
+        console.log(`Carrera: ${duracionMinutos} min a intensidad ${this.intensidad}.`);
     }
 }
 
@@ -42,11 +41,11 @@ class EntrenamientoNatacion implements IEntrenamiento {
     }
 }
 
-// Recibe cualquier objeto que cumpla la interfaz (polimorfismo)
+// Recibe cualquier objeto que cumpla la interfaz
 class AtletaManager {
     constructor(private entrenamiento: IEntrenamiento) { }
 
-    // No sabe qué deporte es: solo llama a los métodos del contrato
+    // solo llama a los métodos del contrato sin saber el deporte
     iniciarSesion(minutos: number): void {
         this.entrenamiento.calentar();
         this.entrenamiento.ejecutarRutina(minutos);

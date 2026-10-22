@@ -1,4 +1,4 @@
-// Clase padre: datos comunes de cualquier futbolista
+// Clase padre
 class Futbolista {
     public nombre: string;
     public edad: number;
@@ -20,7 +20,7 @@ class Futbolista {
     }
 }
 
-// Clase hija: el delantero cobra extra por goles
+// el delantero cobra extra por goles
 class Delantero extends Futbolista {
     public golesTemporada: number;
 
@@ -29,7 +29,7 @@ class Delantero extends Futbolista {
         this.golesTemporada = golesTemporada;
     }
 
-    // Sobrescribe el método del padre: base + 100 € por gol
+    // + 100 € por gol
     calcularSalario(): number {
         return super.calcularSalario() + this.golesTemporada * 100;
     }
@@ -39,7 +39,7 @@ class Delantero extends Futbolista {
     }
 }
 
-// Clase hija: el portero cobra extra por paradas clave
+// el portero cobra extra por paradas clave
 class Portero extends Futbolista {
     public paradasClave: number;
 
@@ -48,7 +48,7 @@ class Portero extends Futbolista {
         this.paradasClave = paradasClave;
     }
 
-    // Sobrescribe el método del padre: base + 150 € por parada clave
+    // + 150 € por parada clave
     calcularSalario(): number {
         return super.calcularSalario() + this.paradasClave * 150;
     }
