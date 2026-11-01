@@ -173,39 +173,13 @@
         });
 
         // ==================================================
-        // 3. MOVIMIENTO DEL JUGADOR (flechas)
-        // ==================================================
-        document.addEventListener('keydown', function (event) {
-
-            if (event.key === 'ArrowUp') {
-                posY = posY - paso;
-                event.preventDefault();
-            }
-            else if (event.key === 'ArrowDown') {
-                posY = posY + paso;
-                event.preventDefault();
-            }
-            else if (event.key === 'ArrowLeft') {
-                posX = posX - paso;
-                event.preventDefault();
-            }
-            else if (event.key === 'ArrowRight') {
-                posX = posX + paso;
-                event.preventDefault();
-            }
-
-            // Actualizamos la posición visual del elemento
-            jugador.style.top = posY + 'px';
-            jugador.style.left = posX + 'px';
-        });
-        // ==================================================
         // 4. MODAL Y ATAJOS (Alt + H / Escape)
         // ==================================================
 
         // Escuchamos el teclado en TODO el documento
         document.addEventListener('keydown', function (event) {
 
-            // Alt + M para ABRIR el modal
+            // Alt + H para ABRIR el modal
             if (event.altKey && (event.key === 'h' || event.key === 'H')) {
                 modal.style.display = 'flex';
                 event.preventDefault();
@@ -219,7 +193,7 @@
         });
 
         // ==================================================
-        // 5. LÍMITES DEL ESCENARIO Y AISLAMIENTO DE FOCO
+        // // 3 y 5. MOVIMIENTO DEL JUGADOR, LÍMITES Y AISLAMIENTO DE FOCO
         // ==================================================
         document.addEventListener('keydown', function (event) {
 
