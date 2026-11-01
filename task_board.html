@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Board</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    .explicacion {
+      background-color: #f0f4f8;
+      border-left: 4px solid #0066cc;
+      padding: 15px;
+      margin-bottom: 20px;
+      font-family: sans-serif;
+    }
+
+    #formTarea input {
+      padding: 8px;
+      width: 65%;
+    }
+
+    #formTarea button {
+      padding: 8px 12px;
+    }
+
+    #listaTareas {
+      list-style: none;
+      padding: 0;
+    }
+
+    #listaTareas li {
+      border: 1px solid #ccc;
+      background-color: #ffffff;
+      padding: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    /* Clases que activa JavaScript */
+    #listaTareas li.resaltada {
+      background-color: #e8f0fe;
+    }
+
+    #listaTareas li.seleccionada {
+      background-color: #d4edda;
+    }
+
+    /* Solo se tacha el texto, no el botón */
+    #listaTareas li.seleccionada span {
+      text-decoration: line-through;
+    }
+
+    #listaTareas li.seleccionada.resaltada {
+      background-color: #c3e6cb;
+    }
+
+    .btn-eliminar {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Cuadro didáctico con los 5 conceptos de la práctica -->
+  <div class="explicacion">
+    <h2>¿Qué se pretende entender aquí?</h2>
+    <p>Este Task Board practica la <strong>gestión avanzada de eventos</strong> con JavaScript nativo:</p>
+    <ul>
+      <li><strong>1. <code>e.preventDefault()</code>:</strong> Inhibe la acción nativa del evento: evita que el formulario recargue la página y que se abra el menú contextual (clic derecho).</li>
+      <li><strong>2. Delegación de eventos:</strong> Un único listener en el <code>&lt;ul&gt;</code> gestiona los clics de todas las tareas, también las creadas después.</li>
+      <li><strong>3. <code>e.stopPropagation()</code>:</strong> Detiene el burbujeo: al pulsar "Eliminar" el clic no continúa subiendo ni se trata como una selección de la tarea.</li>
+      <li><strong>4. <code>e.target</code>:</strong> Indica el elemento real que originó el evento (la tarea, su texto o el botón); con <code>closest()</code> localizamos la tarea.</li>
+      <li><strong>5. Eventos de ratón y selección:</strong> <code>contextmenu</code>, <code>mouseover</code>/<code>mouseout</code> (efecto hover) y <code>selectstart</code> (evita resaltar texto sin querer).</li>
+    </ul>
+  </div>
+
+  <h1>Task Board</h1>
+
+  <form id="formTarea">
+    <input type="text" id="nuevaTarea" placeholder="Escribe una tarea">
+    <button type="submit">Añadir</button>
+  </form>
+
+  <ul id="listaTareas"></ul>
+
+  <script>
+    var formulario = document.getElementById('formTarea');
+    var campo = document.getElementById('nuevaTarea');
+    var lista = document.getElementById('listaTareas');
+
+    // -----------------------------
+    // Formulario: submit
+    // -----------------------------
+    formulario.addEventListener('submit', function(e) {
+      e.preventDefault(); // evita que el formulario recargue la página
+
+      var texto = campo.value.trim();
+
+      // Validamos que no esté vacío (ni solo espacios)
+      if (!texto) {
+        alert('Escribe el texto de la tarea');
+        return;
+      }
+
+      // Creamos el <li> con el texto y su botón "Eliminar"
+      var item = document.createElement('li');
+
+      var span = document.createElement('span');
+      span.textContent = texto;
+
+      var boton = document.createElement('button');
+      boton.textContent = 'Eliminar';
+      boton.className = 'btn-eliminar';
+
+      item.appendChild(span);
+      item.appendChild(boton);
+      lista.appendChild(item);
+
+      campo.value = '';
+      campo.focus();
+    });
+
+    // -----------------------------
+    // Delegación: un solo listener click en el <ul>
+    // -----------------------------
+    lista.addEventListener('click', function(e) {
+      // e.target es lo que se pulsó; closest() sube hasta su <li>
+      var item = e.target.closest('li');
+
+      // Clic en el <ul> fuera de cualquier tarea: no hacemos nada
+      if (!item) {
+        return;
+      }
+
+      // Botón "Eliminar"
+      if (e.target.classList.contains('btn-eliminar')) {
+        e.stopPropagation(); // el clic no sigue subiendo
+        var nombre = item.querySelector('span').textContent;
+
+        if (confirm('¿Eliminar la tarea "' + nombre + '"?')) {
+          item.remove();
+        }
+        return; // sin return se seleccionaría la tarea al eliminarla
+      }
+
+      // Clic en cualquier otra parte de la tarea: seleccionar / deseleccionar
+      item.classList.toggle('seleccionada');
+    });
+
+    // -----------------------------
+    // Ratón sobre la lista
+    // -----------------------------
+    // Bloqueamos el menú contextual del navegador
+    lista.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // Hover: mouseover y mouseout burbujean, por eso se pueden delegar
+    lista.addEventListener('mouseover', function(e) {
+      var item = e.target.closest('li');
+      if (item) {
+        item.classList.add('resaltada');
+      }
+    });
+
+    lista.addEventListener('mouseout', function(e) {
+      var item = e.target.closest('li');
+      if (item) {
+        item.classList.remove('resaltada');
+      }
+    });
+
+    // Evitamos que se resalte texto con clics rápidos o arrastres
+    lista.addEventListener('selectstart', function(e) {
+      e.preventDefault();
+    });
+  </script>
+
+</body>
+
+</html>
