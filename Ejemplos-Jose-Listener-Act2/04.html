@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de Modal con Teclado</title>
+<style>
+    body { 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        text-align: center; 
+        margin-top: 40px; 
+        background-color: #f4f7f9;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    h1 {
+        margin-bottom: 20px;
+    }
+    .instrucciones {
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+    /* Estilos del modal/panel flotante */
+    #modal { 
+        display: none; /* Oculto por defecto */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-contenido {
+        background-color: #1e1e1e;
+        color: #00ff66;
+        font-family: 'Consolas', 'Courier New', monospace;
+        padding: 30px;
+        border-radius: 8px;
+        width: 350px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        text-align: center;
+    }
+    .explicacion {
+        margin-top: 30px;
+        width: 450px;
+        text-align: left;
+        background-color: #ffffff;
+        border-left: 4px solid #007bff;
+        padding: 15px 20px;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        box-sizing: border-box;
+    }
+    .explicacion h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #0056b3;
+    }
+    .explicacion ul {
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+    .explicacion li {
+        margin-bottom: 8px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Control de Interfaz con Teclado</h1>
+<p class="instrucciones">Presiona <strong>Alt + M</strong> para abrir el panel.<br>Presiona <strong>Escape</strong> para cerrarlo.</p>
+
+<!-- Modal emergente -->
+<div id="modal">
+    <div class="modal-contenido">
+        <h2>¡Panel Activo!</h2>
+        <p>Has abierto este panel mediante un atajo de teclado.</p>
+        <p><em>Presiona <strong>Escape</strong> para salir.</em></p>
+    </div>
+</div>
+
+<!-- Explicación de lo que se pretende entender -->
+<div class="explicacion">
+    <h2>¿Qué se pretende entender aquí?</h2>
+    <p>Este ejemplo demuestra cómo controlar componentes de la interfaz (UI) mediante accesos directos de teclado a nivel global (documento):</p>
+    <ul>
+        <li><strong>Eventos a nivel global (<code>document</code>):</strong> Al escuchar el evento <code>keydown</code> en todo el documento, la combinación funciona sin importar qué elemento tenga el foco.</li>
+        <li><strong>Uso de la tecla <code>Escape</code>:</strong> Es un estándar de accesibilidad internacional utilizar la tecla <code>Escape</code> (<code>event.key === 'Escape'</code>) para cerrar modales, menús flotantes o cancelar acciones.</li>
+        <li><strong>Control de visibilidad en el DOM:</strong> Se altera la propiedad CSS <code>display</code> entre <code>'flex'</code> y <code>'none'</code> según la tecla detectada.</li>
+    </ul>
+</div>
+
+<script>
+var modal = document.getElementById('modal');
+
+// Escuchamos el teclado en TODO el documento
+document.addEventListener('keydown', function(event) {
+
+    // Alt + M para ABRIR el modal
+    if (event.altKey && (event.key === 'm' || event.key === 'M')) {
+        modal.style.display = 'flex';
+    }
+
+    // Tecla Escape para CERRAR el modal
+    if (event.key === 'Escape') {
+        modal.style.display = 'none';
+    }
+});
+</script>
+
+</body>
+</html>

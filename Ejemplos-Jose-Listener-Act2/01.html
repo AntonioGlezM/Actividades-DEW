@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propiedades de Evento de Teclado</title>
+<style>
+    body { 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        text-align: center; 
+        margin-top: 40px; 
+        background-color: #f4f7f9;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    h1 {
+        margin-bottom: 20px;
+    }
+    input { 
+        padding: 12px 16px; 
+        font-size: 16px; 
+        width: 320px; 
+        border: 2px solid #007bff;
+        border-radius: 6px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    input:focus {
+        border-color: #0056b3;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+    #log { 
+        margin-top: 25px; 
+        font-family: 'Consolas', 'Courier New', monospace; 
+        white-space: pre-wrap; 
+        text-align: left; 
+        width: 450px;
+        background-color: #1e1e1e;
+        color: #00ff66;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        box-sizing: border-box;
+    }
+    .explicacion {
+        margin-top: 30px;
+        width: 450px;
+        text-align: left;
+        background-color: #ffffff;
+        border-left: 4px solid #007bff;
+        padding: 15px 20px;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        box-sizing: border-box;
+    }
+    .explicacion h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #0056b3;
+    }
+    .explicacion ul {
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+    .explicacion li {
+        margin-bottom: 8px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Eventos de Teclado</h1>
+
+<!-- Campo de texto de entrada -->
+<input type="text" id="textInput" placeholder="Presiona cualquier tecla..." autofocus>
+
+<!-- Consola visual de salida -->
+<div id="log">Esperando interacción con el teclado...</div>
+
+<!-- Explicación de lo que se pretende entender -->
+<div class="explicacion">
+    <h2>¿Qué se pretende entender aquí?</h2>
+    <p>Este ejemplo demuestra cómo acceder a las propiedades principales que genera el navegador al presionar una tecla:</p>
+    <ul>
+        <li><strong>Diferencia entre <code>key</code> y <code>code</code>:</strong> <code>e.key</code> representa el carácter producido (ej. <code>"a"</code> o <code>"A"</code>), mientras que <code>e.code</code> identifica la tecla física accionada (ej. <code>KeyA</code>).</li>
+        <li><strong>Teclas modificadoras:</strong> Las propiedades booleanas (<code>altKey</code>, <code>ctrlKey</code>, <code>shiftKey</code>, <code>metaKey</code>) devuelven <code>true</code> si la tecla correspondiente estaba pulsada durante el evento.</li>
+        <li><strong>Detección de combinaciones:</strong> Permite construir atajos de teclado o atajar acciones complejas analizando el estado simultáneo de varias teclas.</li>
+    </ul>
+</div>
+
+<script>
+const input = document.getElementById('textInput');
+const log = document.getElementById('log');
+
+input.addEventListener('keydown', function(e) {
+    const modificadoras = [];
+    if (e.altKey) modificadoras.push('Alt');
+    if (e.ctrlKey) modificadoras.push('Ctrl');
+    if (e.shiftKey) modificadoras.push('Shift');
+    if (e.metaKey) modificadoras.push('Meta/Cmd/Win');
+
+    const textoModificadoras = modificadoras.length > 0 ? modificadoras.join(' + ') : 'Ninguna';
+
+    log.textContent = 
+        "--- Evento: keydown ---\n" +
+        "e.key      : \"" + e.key + "\"\n" +
+        "e.code     : " + e.code + "\n" +
+        "Modificadas: " + textoModificadoras + "\n" +
+        "-------------------------\n" +
+        "Alt        : " + e.altKey + "\n" +
+        "Ctrl       : " + e.ctrlKey + "\n" +
+        "Shift      : " + e.shiftKey + "\n" +
+        "Meta       : " + e.metaKey;
+});
+</script>
+
+</body>
+</html>
