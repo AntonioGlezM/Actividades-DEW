@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad Integradora - Crear y Mover Jugador</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin-top: 20px;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .panel-creacion {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 380px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            border: 2px solid #007bff;
+            border-radius: 6px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        #mensajeError {
+            color: #d9534f;
+            font-size: 13px;
+            margin-top: 5px;
+            height: 18px;
+        }
+
+        /* Escenario: 420x250 de contenido, posición relativa */
+        #escenario {
+            width: 420px;
+            height: 250px;
+            background-color: #1e1e1e;
+            border: 3px solid #007bff;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Jugador: círculo de 40x40, posición absoluta, centrado en el escenario */
+        #jugador {
+            width: 40px;
+            height: 40px;
+            background-color: #00ff66;
+            border-radius: 50%;
+            position: absolute;
+            top: 105px;
+            left: 190px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1e1e1e;
+            font-size: 16px;
+            box-shadow: 0 0 8px rgba(0, 255, 102, 0.6);
+        }
+
+        /* Modal oculto por defecto: se muestra con display: flex */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-contenido {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            width: 350px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Crear y Mover Jugador</h1>
+
+    <!-- Panel de creación del dorsal -->
+    <div class="panel-creacion">
+        <label for="dorsalInput">Dorsal del Jugador (Solo Números):</label>
+        <input type="text" id="dorsalInput" placeholder="Ej. 10 y pulsa Enter..." autofocus>
+        <div id="mensajeError"></div>
+        <small>Presiona <strong>Alt + H</strong> para ver las instrucciones.</small>
+    </div>
+
+    <!-- Campo de juego -->
+    <div id="escenario">
+        <div id="jugador">?</div>
+    </div>
+
+    <!-- Modal de ayuda -->
+    <div id="modal">
+        <div class="modal-contenido">
+            <h2>Controles del Juego</h2>
+            <ul>
+                <li><strong>Crear Jugador:</strong> Escribe el número y presiona <code>Enter</code>.</li>
+                <li><strong>Mover Jugador:</strong> Flechas de dirección (Arriba, Abajo, Izquierda, Derecha).</li>
+                <li><strong>Cerrar Ayuda:</strong> Presiona la tecla <code>Escape</code>.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // ==================================================
+        // 0. REFERENCIAS Y VARIABLES
+        // ==================================================
+        var jugador = document.getElementById('jugador');
+        var modal = document.getElementById('modal');
+        var dorsalInput = document.getElementById('dorsalInput');
+        var mensajeError = document.getElementById('mensajeError');
+
+        // Posición inicial en píxeles
+        var posX = 190;
+        var posY = 105;
+        var paso = 15; // Cantidad de píxeles que se mueve por pulsación
+
+
+
+        // ==================================================
+        // 1. VALIDACIÓN DEL DORSAL (keydown en el input)
+        // ==================================================
+        dorsalInput.addEventListener('keydown', function (event) {
+            var teclasPermitidas = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'];
+
+            if (!teclasPermitidas.includes(event.key)) {
+                event.preventDefault();
+                mensajeError.textContent = 'Solo se permiten números.';
+                mensajeError.style.color = '#ff5252'; // Rojo de advertencia
+            } else {
+                mensajeError.textContent = '';
+            }
+
+            // ==================================================
+            // 2. ASIGNACIÓN DEL DORSAL Y CONTROL DE FOCO (Enter)
+            // ==================================================
+            if (event.key === 'Enter' && dorsalInput.value !== '') {
+                jugador.textContent = dorsalInput.value; // 1. escribir el valor del campo en el jugador
+                dorsalInput.blur(); // 2. quitar el foco del campo
+            }
+        });
+
+        // ==================================================
+        // 3. MOVIMIENTO DEL JUGADOR (flechas)
+        // ==================================================
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key === 'ArrowUp') {
+                posY = posY - paso;
+                event.preventDefault();
+            }
+            else if (event.key === 'ArrowDown') {
+                posY = posY + paso;
+                event.preventDefault();
+            }
+            else if (event.key === 'ArrowLeft') {
+                posX = posX - paso;
+                event.preventDefault();
+            }
+            else if (event.key === 'ArrowRight') {
+                posX = posX + paso;
+                event.preventDefault();
+            }
+
+            // Actualizamos la posición visual del elemento
+            jugador.style.top = posY + 'px';
+            jugador.style.left = posX + 'px';
+        });
+        // ==================================================
+        // 4. MODAL Y ATAJOS (Alt + H / Escape)
+        // ==================================================
+
+        // Escuchamos el teclado en TODO el documento
+        document.addEventListener('keydown', function (event) {
+
+            // Alt + M para ABRIR el modal
+            if (event.altKey && (event.key === 'h' || event.key === 'H')) {
+                modal.style.display = 'flex';
+                event.preventDefault();
+            }
+
+            // Tecla Escape para CERRAR el modal
+            if (event.key === 'Escape') {
+                modal.style.display = 'none';
+                event.preventDefault();
+            }
+        });
+
+        // ==================================================
+        // 5. LÍMITES DEL ESCENARIO Y AISLAMIENTO DE FOCO
+        // ==================================================
+        document.addEventListener('keydown', function (event) {
+
+            // Solo muevo al jugador si no estoy escribiendo en el dorsal
+            if (document.activeElement !== dorsalInput) {
+
+                if (event.key === 'ArrowUp') {
+                    posY = Math.max(0, posY - paso);      // suelo: no baja de 0
+                    event.preventDefault();
+                }
+                else if (event.key === 'ArrowDown') {
+                    posY = Math.min(210, posY + paso);    // techo: no pasa de 210
+                    event.preventDefault();
+                }
+                else if (event.key === 'ArrowLeft') {
+                    posX = Math.max(0, posX - paso);      // suelo: no baja de 0
+                    event.preventDefault();
+                }
+                else if (event.key === 'ArrowRight') {
+                    posX = Math.min(380, posX + paso);    // techo: no pasa de 380
+                    event.preventDefault();
+                }
+
+                // Actualizamos la posición visual del elemento
+                jugador.style.top = posY + 'px';
+                jugador.style.left = posX + 'px';
+            }
+        });
+    </script>
+
+</body>
+
+</html>
