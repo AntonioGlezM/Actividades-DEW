@@ -105,10 +105,10 @@
 
       var texto = campo.value.trim();
 
-      // Validamos que no esté vacío (ni solo espacios)
+      // Validamos que no esté vacío
       if (!texto) {
         alert('Escribe el texto de la tarea');
-        return; // detiene la ejecución si está vacío
+        return; 
       }
 
       // Creamos la tarea (<li>). data-accion indica qué hace un clic sobre ella
@@ -155,7 +155,6 @@
           var tarea = elemento.closest('li');
           var nombre = tarea.querySelector('span').textContent;
 
-          // Confirmación previa antes de eliminar el nodo del DOM
           if (confirm('¿Eliminar la tarea "' + nombre + '"?')) {
             tarea.remove();
           }
