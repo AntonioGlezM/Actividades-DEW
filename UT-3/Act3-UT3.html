@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurador de Evento Musical</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tarjeta {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 380px;
+        }
+
+        .grupo {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 15px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        /* Feedback visual cuando el campo tiene el foco */
+        input:focus,
+        select:focus {
+            border-color: #007bff;
+        }
+
+        select:disabled {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        /* Mensaje de ayuda bajo el buscador */
+        #infoBuscar {
+            display: block;
+            min-height: 18px;
+            margin-top: 5px;
+            font-size: 13px;
+            color: #007bff;
+        }
+
+        /* Consola de eventos */
+        #log {
+            width: 380px;
+            height: 150px;
+            margin-top: 20px;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #1e293b;
+            color: #f8fafc;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            white-space: pre-line;
+            overflow-y: auto;
+            border-radius: 6px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Configurador de Evento Musical</h1>
+
+    <div class="tarjeta">
+
+        <!-- Buscador: eventos input, focus y blur -->
+        <div class="grupo">
+            <label for="buscador">Buscar artista o canción:</label>
+            <input type="text" id="buscador" placeholder="Escribe para buscar...">
+            <span id="infoBuscar"></span>
+        </div>
+
+        <!-- Primer desplegable: género -->
+        <div class="grupo">
+            <label for="genero">Género musical:</label>
+            <select id="genero">
+                <option value="">-- Selecciona un género --</option>
+                <option value="Pop">Pop</option>
+                <option value="Rock">Rock</option>
+                <option value="Rap">Rap</option>
+            </select>
+        </div>
+
+        <!-- Segundo desplegable: artista (deshabilitado hasta elegir género) -->
+        <div class="grupo">
+            <label for="artista">Artista / Grupo:</label>
+            <select id="artista" disabled>
+                <option value="">-- Primero elige un género --</option>
+            </select>
+        </div>
+
+    </div>
+
+    <!-- Consola de eventos en pantalla -->
+    <div id="log"></div>
+
+    <script>
+        // ==================================================
+        // 0. DATOS Y REFERENCIAS AL DOM
+        // ==================================================
+        var generoSelect = document.getElementById("genero");
+        var artistaSelect = document.getElementById("artista");
+        var buscadorInput = document.getElementById("buscador");
+        var infoBuscar = document.getElementById("infoBuscar");
+        var logDiv = document.getElementById("log");
+        var cantantesPorGenero = {
+            Pop: ["Michael Jackson", "Madonna"],
+            Rock: ["Queen", "Pink Floyd"],
+            Rap: ["50 Cent", "Tupac Shakur"]
+        };
+        // ==================================================
+        // 1. CONSOLA DE EVENTOS (función auxiliar)
+        // ==================================================
+        function registrarLog(texto) {
+            logDiv.textContent += texto + "\n";
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // ==================================================
+        // 2. BUSCADOR EN TIEMPO REAL (evento input)
+        // ==================================================
+
+        buscadorInput.addEventListener('input', function (e) {
+            var texto = e.target.value;
+            infoBuscar.textContent = 'Buscando: "' + texto + '" (' + texto.length + ' caracteres)';
+            registrarLog('input [Buscador]: "' + texto + '"');
+        });
+
+        // ==================================================
+        // 3. FEEDBACK DE FOCO (eventos focus y blur)
+        // ==================================================
+        buscadorInput.addEventListener('focus', function () {
+            infoBuscar.textContent = 'Escribe para filtrar resultados...';
+            registrarLog('focus [Buscador]: el usuario entró al campo');
+        });
+
+        buscadorInput.addEventListener('blur', function () {
+            if (buscadorInput.value === '') {
+                infoBuscar.textContent = 'El buscador está vacío';
+            }
+            registrarLog('blur [Buscador]: el usuario salió del campo');
+        });
+
+
+        // ==================================================
+        // 4. DESPLEGABLES ANIDADOS (change en el género)
+        // ==================================================
+
+        generoSelect.addEventListener('change', function (e) {
+            var genero = e.target.value;
+            artistaSelect.innerHTML = '<option value="">-- Selecciona un artista --</option>';
+            if (genero && cantantesPorGenero[genero]) {
+                cantantesPorGenero[genero].forEach(function (artista) {
+                    var option = document.createElement('option');
+                    option.value = artista;
+                    option.textContent = artista;
+                    artistaSelect.appendChild(option);
+                });
+                artistaSelect.disabled = false;
+                registrarLog('change [Género]: Seleccionado "' + genero + '"');
+            } else {
+                artistaSelect.disabled = true;
+                artistaSelect.innerHTML = '<option value="">-- Primero elige un género --</option>';
+                registrarLog('change [Género]: Selección limpiada');
+            }
+        });
+
+        // ==================================================
+        // 5. CAMBIO DE ARTISTA Y REGISTRO FINAL (change en el artista)
+        // ==================================================
+
+        artistaSelect.addEventListener('change', function (e) {
+            if (e.target.value !== '') {
+                registrarLog('change [Artista]: Seleccionado "' + e.target.value + '"');
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>
