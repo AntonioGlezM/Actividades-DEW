@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evento Input en Tiempo Real</title>
+<style>
+    body { 
+        font-family: sans-serif; 
+        text-align: center; 
+        margin-top: 40px; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    input { padding: 10px; font-size: 16px; width: 300px; }
+    #log { 
+        margin-top: 20px; 
+        font-family: monospace; 
+        white-space: pre-line; 
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 300px;
+        max-height: 150px;
+        overflow-y: auto;
+        background-color: #f9f9f9;
+        text-align: left;
+    }
+    .explicacion {
+        margin-top: 30px;
+        max-width: 500px;
+        text-align: left;
+        background-color: #eef6ff;
+        border-left: 4px solid #007bff;
+        padding: 15px 20px;
+        border-radius: 4px;
+    }
+    .explicacion h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #0056b3;
+    }
+    .explicacion ul {
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+    .explicacion li {
+        margin-bottom: 8px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Evento Input en Tiempo Real</h1>
+<input type="text" id="textInput" placeholder="Escribe y mira los cambios al instante...">
+<div id="log"></div>
+
+<div class="explicacion">
+    <h2>¿Qué se pretende entender aquí?</h2>
+    <p>Este ejemplo demuestra la diferencia entre detectar el cambio al instante frente a esperar el desenfoque:</p>
+    <ul>
+        <li><strong>Evento <code>input</code>:</strong> Se dispara instantáneamente cada vez que el valor del campo cambia (al escribir, borrar, pegar texto con el ratón, etc.). No requiere perder el foco.</li>
+        <li><strong>Diferencia con <code>change</code>:</strong> Mientras que <code>change</code> espera a que salgas del campo (o pulses Enter), <code>input</code> reacciona carácter por carácter en tiempo real.</li>
+    </ul>
+</div>
+
+<script>
+const input = document.getElementById('textInput');
+const log = document.getElementById('log');
+
+function registrarEvento(e) {
+    log.textContent += e.type + ': Valor actual = "' + e.target.value + '"\n';
+    log.scrollTop = log.scrollHeight;
+}
+
+input.addEventListener('input', registrarEvento);
+</script>
+
+</body>
+</html>

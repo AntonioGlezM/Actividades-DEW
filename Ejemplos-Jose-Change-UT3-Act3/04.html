@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selects Anidados: Islas Canarias y Municipios</title>
+<style>
+    body { 
+        font-family: sans-serif; 
+        text-align: center; 
+        margin-top: 40px; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+    select { 
+        padding: 10px; 
+        font-size: 16px; 
+        width: 320px; 
+        cursor: pointer; 
+    }
+    select:disabled {
+        background-color: #f0f0f0;
+        cursor: not-allowed;
+    }
+    #log { 
+        margin-top: 20px; 
+        font-family: monospace; 
+        white-space: pre-line; 
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 300px;
+        max-height: 150px;
+        overflow-y: auto;
+        background-color: #f9f9f9;
+        text-align: left;
+    }
+    .explicacion {
+        margin-top: 30px;
+        max-width: 500px;
+        text-align: left;
+        background-color: #eef6ff;
+        border-left: 4px solid #007bff;
+        padding: 15px 20px;
+        border-radius: 4px;
+    }
+    .explicacion h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #0056b3;
+    }
+    .explicacion ul {
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+    .explicacion li {
+        margin-bottom: 8px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Selects Anidados: Islas Canarias y Municipios</h1>
+
+<div class="form-group">
+    <label for="selectIsla">Isla:</label>
+    <select id="selectIsla">
+        <option value="">-- Selecciona una isla --</option>
+        <option value="tenerife">Tenerife</option>
+        <option value="gran_canaria">Gran Canaria</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="selectMunicipio">Municipio:</label>
+    <select id="selectMunicipio" disabled>
+        <option value="">-- Primero elige una isla --</option>
+    </select>
+</div>
+
+<div id="log"></div>
+
+<div class="explicacion">
+    <h2>¿Qué se pretende entender aquí?</h2>
+    <p>Este ejemplo demuestra la interacción entre elementos <code>&lt;select&gt;</code> de la forma más sencilla posible:</p>
+    <ul>
+        <li><strong>Captura de valor:</strong> Con <code>e.target.value</code> obtenemos qué isla seleccionó el alumno.</li>
+        <li><strong>Carga limpia con <code>innerHTML</code>:</strong> Recorremos la lista de municipios con un bucle <code>for</code> básico y rellenamos el segundo desplegable.</li>
+        <li><strong>Activar/Desactivar:</strong> Cambiamos la propiedad <code>disabled</code> según haya o no una isla seleccionada.</li>
+    </ul>
+</div>
+
+<script>
+// Lista de municipios según la isla elegida
+const municipiosPorIsla = {
+    tenerife: ['Santa Cruz', 'La Laguna', 'Adeje'],
+    gran_canaria: ['Las Palmas', 'Telde', 'Arucas']
+};
+
+const selectIsla = document.getElementById('selectIsla');
+const selectMunicipio = document.getElementById('selectMunicipio');
+const log = document.getElementById('log');
+
+// 1. Cuando cambia la Isla
+selectIsla.addEventListener('change', function(e) {
+    const islaClave = e.target.value;
+
+    // Si ha elegido una isla válida
+    if (islaClave !== "") {
+        const listaMunicipios = municipiosPorIsla[islaClave];
+
+        // Preparamos el HTML con la opción inicial
+        let opcionesHTML = '<option value="">-- Selecciona un municipio --</option>';
+
+        // Añadimos cada municipio con un bucle simple
+        for (let i = 0; i < listaMunicipios.length; i++) {
+            let nombreMunicipio = listaMunicipios[i];
+            opcionesHTML += '<option value="' + nombreMunicipio + '">' + nombreMunicipio + '</option>';
+        }
+
+        // Insertamos todas las opciones y habilitamos el select
+        selectMunicipio.innerHTML = opcionesHTML;
+        selectMunicipio.disabled = false;
+
+        log.textContent += 'change [Isla]: "' + islaClave + '"\n';
+    } else {
+        // Si vuelve a la opción por defecto
+        selectMunicipio.innerHTML = '<option value="">-- Primero elige una isla --</option>';
+        selectMunicipio.disabled = true;
+
+        log.textContent += 'change [Isla]: Selección limpiada\n';
+    }
+
+    log.scrollTop = log.scrollHeight;
+});
+
+// 2. Cuando cambia el Municipio
+selectMunicipio.addEventListener('change', function(e) {
+    const municipioClave = e.target.value;
+    
+    if (municipioClave !== "") {
+        log.textContent += 'change [Municipio]: "' + municipioClave + '"\n';
+        log.scrollTop = log.scrollHeight;
+    }
+});
+</script>
+
+</body>
+</html>

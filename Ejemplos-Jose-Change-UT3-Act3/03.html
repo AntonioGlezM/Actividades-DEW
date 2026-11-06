@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evento Change con Target Select</title>
+<style>
+    body { 
+        font-family: sans-serif; 
+        text-align: center; 
+        margin-top: 40px; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    select { padding: 10px; font-size: 16px; width: 320px; cursor: pointer; }
+    #log { 
+        margin-top: 20px; 
+        font-family: monospace; 
+        white-space: pre-line; 
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 300px;
+        max-height: 150px;
+        overflow-y: auto;
+        background-color: #f9f9f9;
+        text-align: left;
+    }
+    .explicacion {
+        margin-top: 30px;
+        max-width: 500px;
+        text-align: left;
+        background-color: #eef6ff;
+        border-left: 4px solid #007bff;
+        padding: 15px 20px;
+        border-radius: 4px;
+    }
+    .explicacion h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #0056b3;
+    }
+    .explicacion ul {
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+    .explicacion li {
+        margin-bottom: 8px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Evento Change con Target Select</h1>
+<select id="opcionesSelect">
+    <option value="">-- Selecciona una opción --</option>
+    <option value="opcion_1">Opción 1: HTML</option>
+    <option value="opcion_2">Opción 2: CSS</option>
+    <option value="opcion_3">Opción 3: JavaScript</option>
+</select>
+<div id="log"></div>
+
+<div class="explicacion">
+    <h2>¿Qué se pretende entender aquí?</h2>
+    <p>Este ejemplo demuestra cómo funciona el evento <code>change</code> y el uso de <code>e.target</code> sobre una lista desplegable (<code>&lt;select&gt;</code>):</p>
+    <ul>
+        <li><strong>Disparo inmediato:</strong> A diferencia de los campos de texto, en un <code>&lt;select&gt;</code> el evento <code>change</code> se dispara <strong>al instante</strong> cuando el usuario selecciona una nueva opción, sin necesidad de perder el foco.</li>
+        <li><strong>Uso de <code>e.target</code>:</strong> <code>e.target</code> hace referencia directa al elemento HTML que disparó el evento (el <code>&lt;select&gt;</code>).</li>
+        <li><strong>Propiedades clave:</strong> Con <code>e.target.value</code> obtenemos el valor del atributo <code>value</code> de la opción elegida, y con <code>e.target.options[e.target.selectedIndex].text</code> obtenemos el texto visible para el usuario.</li>
+    </ul>
+</div>
+
+<script>
+const select = document.getElementById('opcionesSelect');
+const log = document.getElementById('log');
+
+function registrarEvento(e) {
+    const elementoTarget = e.target; // Hace referencia al <select>
+    const valorSeleccionado = elementoTarget.value;
+    const textoVisible = elementoTarget.options[elementoTarget.selectedIndex].text;
+
+    log.textContent += e.type + ' -> [ID: ' + elementoTarget.id + '] Valor: "' + valorSeleccionado + '" (' + textoVisible + ')\n';
+    log.scrollTop = log.scrollHeight;
+}
+
+select.addEventListener('change', registrarEvento);
+</script>
+
+</body>
+</html>

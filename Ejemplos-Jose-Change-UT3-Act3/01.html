@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eventos de Formulario: Focus, Blur y Change</title>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body { 
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        background-color: #f4f6f9;
+        color: #333;
+        margin: 0;
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h1 {
+        margin-bottom: 25px;
+        color: #1e293b;
+        font-size: 24px;
+        text-align: center;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+        max-width: 520px;
+    }
+
+    .form-card {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid #e2e8f0;
+    }
+
+    .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    label {
+        font-weight: 600;
+        font-size: 14px;
+        color: #475569;
+    }
+
+    input[type="text"] { 
+        padding: 10px 12px; 
+        font-size: 15px; 
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        width: 100%;
+        background-color: #fff;
+    }
+
+    input[type="text"]:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .log-container {
+        background: #1e293b;
+        color: #f8fafc;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .log-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #334155;
+    }
+
+    .log-header h3 {
+        margin: 0;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #94a3b8;
+    }
+
+    .btn-clear {
+        background: #334155;
+        color: #f8fafc;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-clear:hover {
+        background: #475569;
+    }
+
+    #log { 
+        font-family: 'Courier New', Courier, monospace; 
+        font-size: 13px;
+        white-space: pre-wrap; 
+        max-height: 180px;
+        overflow-y: auto;
+        line-height: 1.5;
+    }
+
+    .event-focus { color: #60a5fa; }
+    .event-blur { color: #f87171; }
+    .event-change { color: #4ade80; }
+
+    .explicacion {
+        background-color: #eff6ff;
+        border-left: 4px solid #2563eb;
+        padding: 18px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #1e3a8a;
+    }
+
+    .explicacion h2 {
+        margin-top: 0;
+        font-size: 16px;
+        color: #1e40af;
+        margin-bottom: 10px;
+    }
+
+    .explicacion ul {
+        padding-left: 20px;
+        margin: 0;
+    }
+
+    .explicacion li {
+        margin-bottom: 10px;
+    }
+
+    .explicacion li:last-child {
+        margin-bottom: 0;
+    }
+
+    code {
+        background-color: #dbeafe;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 13px;
+        color: #1e40af;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Eventos de Focus, Blur y Change en Input</h1>
+
+    <div class="form-card">
+        <div class="field-group">
+            <label for="campoTexto">Campo de Texto (prueba focus, blur y change):</label>
+            <input type="text" id="campoTexto" placeholder="Escribe algo y haz clic fuera...">
+        </div>
+    </div>
+
+    <div class="log-container">
+        <div class="log-header">
+            <h3>Consola de Eventos</h3>
+            <button class="btn-clear" id="btnClear">Limpiar</button>
+        </div>
+        <div id="log"></div>
+    </div>
+
+    <div class="explicacion">
+        <h2>¿Qué ocurre en cada evento?</h2>
+        <ul>
+            <li><strong>Evento <code>focus</code>:</strong> Se dispara cuando el campo recibe el foco (al hacer clic dentro del input o al acceder mediante la tecla Tab).</li>
+            <li><strong>Evento <code>blur</code>:</strong> Se dispara cuando el campo pierde el foco (al hacer clic fuera de él o desplazarte a otro elemento).</li>
+            <li><strong>Evento <code>change</code>:</strong> Se activa únicamente si has modificado el contenido del texto y posteriormente el campo pierde el foco.</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+const campoTexto = document.getElementById('campoTexto');
+const log = document.getElementById('log');
+const btnClear = document.getElementById('btnClear');
+
+function registrarEvento(e) {
+    let detalle = '';
+    
+    if (e.type === 'change') {
+        detalle = ' (Nuevo valor: "' + e.target.value + '")';
+    }
+
+    const claseColor = 'event-' + e.type;
+    const mensaje = '<span class="' + claseColor + '">[' + e.target.id + '] ' + e.type + '</span>' + detalle + '\n';
+    
+    log.innerHTML += mensaje;
+    log.scrollTop = log.scrollHeight;
+}
+
+// Eventos para el Input de Texto
+campoTexto.addEventListener('focus', registrarEvento);
+campoTexto.addEventListener('blur', registrarEvento);
+campoTexto.addEventListener('change', registrarEvento);
+
+// Botón para limpiar consola
+btnClear.addEventListener('click', function() {
+    log.innerHTML = '';
+});
+</script>
+
+</body>
+</html>

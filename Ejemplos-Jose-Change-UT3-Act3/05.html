@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ejemplo simple de evento change</title>
+<style>
+    body {
+        font-family: sans-serif;
+        margin: 30px;
+    }
+    .explicacion {
+        margin-top: 30px;
+        max-width: 500px;
+        text-align: left;
+        background-color: #eef6ff;
+        border-left: 4px solid #007bff;
+        padding: 15px 20px;
+        border-radius: 4px;
+    }
+    .explicacion h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #0056b3;
+    }
+    .explicacion ul {
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+    .explicacion li {
+        margin-bottom: 8px;
+    }
+</style>
+</head>
+<body>
+
+<h2>Selecciona un género y un cantante</h2>
+
+<!-- Select para géneros -->
+Género:
+<select id="genero">
+  <option value="">Selecciona un género</option>
+  <option value="Pop">Pop</option>
+  <option value="Rock">Rock</option>
+  <option value="Rap">Rap</option>
+</select>
+<br><br>
+
+<!-- Select para cantantes -->
+Cantante/Grupo:
+<select id="cantante">
+  <option value="">Selecciona un cantante</option>
+</select>
+<br><br>
+
+<div id="mensaje"></div>
+
+<div class="explicacion">
+    <h2>¿Qué se pretende entender aquí?</h2>
+    <p>Este ejemplo demuestra cómo actualizar dinámicamente el contenido de un <code>&lt;select&gt;</code> según la opción elegida en otro:</p>
+    <ul>
+        <li><strong>Lectura del valor con <code>this.value</code>:</strong> Obtenemos el género seleccionado directamente desde la opción activa del primer desplegable.</li>
+        <li><strong>Búsqueda en un objeto (diccionario):</strong> Usamos la clave elegida (ej. <code>"Pop"</code>) para obtener el array correspondiente en <code>cantantesPorGenero</code>.</li>
+        <li><strong>Reinicio de opciones con <code>innerHTML</code>:</strong> Vaciamos el select secundario antes de cargar nuevos elementos para evitar acumular datos antiguos.</li>
+        <li><strong>Inserción de nodos con <code>createElement</code>:</strong> Recorremos la lista con <code>forEach</code>, creamos etiquetas <code>&lt;option&gt;</code> e insertamos cada una con <code>appendChild()</code>.</li>
+    </ul>
+</div>
+
+<script>
+// Diccionario de géneros y cantantes
+var cantantesPorGenero = {
+  Pop: ["Michael Jackson", "Madonna"],
+  Rock: ["Queen", "Pink Floyd"],
+  Rap: ["50 Cent", "Tupac Shakur"]
+};
+
+// Referencias a los selects y mensaje
+var generoSelect = document.getElementById('genero');
+var cantanteSelect = document.getElementById('cantante');
+var mensaje = document.getElementById('mensaje');
+
+// Evento change para el select de género
+generoSelect.addEventListener('change', function() {
+  // Limpiar el select de cantantes
+  cantanteSelect.innerHTML = '<option value="">Selecciona un cantante</option>';
+  
+  // Si hay género seleccionado, agregar cantantes correspondientes
+  if (this.value !== "") {
+    var lista = cantantesPorGenero[this.value];
+    lista.forEach(function(c) {
+      var opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c;
+      cantanteSelect.appendChild(opt);
+    });
+  }
+
+  mensaje.textContent = 'Género seleccionado: ' + this.value;
+});
+
+// Evento change para el select de cantante
+cantanteSelect.addEventListener('change', function() {
+  mensaje.textContent = 'Cantante seleccionado: ' + this.value;
+});
+</script>
+
+</body>
+</html>
