@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulario Completo de Registro (Validación Mixta + Mostrar Contraseña)</title>
+<style>
+    body { 
+        font-family: sans-serif; 
+        margin: 40px; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #f4f6f9;
+    }
+    h1 {
+        color: #333;
+        margin-bottom: 20px;
+    }
+    form {
+        background-color: #fff;
+        padding: 25px 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        width: 340px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+    .form-group-checkbox {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        font-weight: normal;
+        font-size: 14px;
+        cursor: pointer;
+    }
+    .checkbox-label input {
+        margin-right: 8px;
+        width: auto;
+    }
+    /* Contenedor del campo con el botón de mostrar/ocultar */
+    .input-password-group {
+        display: flex;
+        gap: 5px;
+    }
+    .input-password-group input {
+        flex: 1;
+    }
+    .btn-toggle {
+        padding: 8px 12px;
+        font-size: 13px;
+        background-color: #e9ecef;
+        color: #495057;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        cursor: pointer;
+        width: auto;
+        margin-top: 0;
+        font-weight: normal;
+    }
+    .btn-toggle:hover {
+        background-color: #dee2e6;
+    }
+    label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        font-size: 14px;
+        color: #444;
+    }
+    input, select {
+        padding: 9px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        outline: none;
+    }
+    input:focus, select:focus {
+        border-color: #007bff;
+    }
+    .error {
+        color: #d9534f;
+        font-size: 12px;
+        margin-top: 4px;
+        display: none;
+    }
+    input.invalido, select.invalido {
+        border-color: #d9534f;
+        background-color: #fdf2f2;
+    }
+    button[type="submit"] {
+        padding: 11px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+    button[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+    #mensajeExito {
+        margin-top: 20px;
+        color: #28a745;
+        font-weight: bold;
+        text-align: center;
+    }
+    .explicacion {
+        margin-top: 30px;
+        max-width: 500px;
+        text-align: left;
+        background-color: #eef6ff;
+        border-left: 4px solid #007bff;
+        padding: 15px 20px;
+        border-radius: 4px;
+    }
+    .explicacion h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #0056b3;
+    }
+    .explicacion ul {
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+    .explicacion li {
+        margin-bottom: 8px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Registro de Alumno</h1>
+
+<form id="formRegistro" novalidate>
+
+    <!-- 1. Nombre de usuario -->
+    <div class="form-group">
+        <label for="usuario">Nombre de usuario:</label>
+        <input type="text" id="usuario" name="usuario" required minlength="4">
+        <span class="error" id="errorUsuario"></span>
+    </div>
+
+    <!-- 2. Correo electrónico -->
+    <div class="form-group">
+        <label for="email">Correo Electrónico:</label>
+        <input type="email" id="email" name="email" required>
+        <span class="error" id="errorEmail"></span>
+    </div>
+
+    <!-- 3. Edad -->
+    <div class="form-group">
+        <label for="edad">Edad:</label>
+        <input type="number" id="edad" name="edad" required min="1" max="120">
+        <span class="error" id="errorEdad"></span>
+    </div>
+
+    <!-- 4. Contraseña -->
+    <div class="form-group">
+        <label for="password">Contraseña (mín. 6 caracteres):</label>
+        <div class="input-password-group">
+            <input type="password" id="password" name="password" required minlength="6">
+            <button type="button" id="btnTogglePassword" class="btn-toggle">Mostrar</button>
+        </div>
+        <span class="error" id="errorPassword"></span>
+    </div>
+
+    <!-- 5. Repetir contraseña -->
+    <div class="form-group">
+        <label for="confirmPassword">Repetir Contraseña:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required>
+        <span class="error" id="errorConfirmPassword"></span>
+    </div>
+
+    <!-- 6. Desplegable perfil -->
+    <div class="form-group">
+        <label for="perfil">Perfil:</label>
+        <select id="perfil" name="perfil" required>
+            <option value="">-- Selecciona un perfil --</option>
+            <option value="estudiante">Estudiante</option>
+            <option value="profesor">Profesor</option>
+        </select>
+        <span class="error" id="errorPerfil"></span>
+    </div>
+
+    <!-- 7. Términos y condiciones (Checkbox) -->
+    <div class="form-group-checkbox">
+        <label class="checkbox-label">
+            <input type="checkbox" id="terminos" name="terminos" required>
+            Acepto los términos y condiciones
+        </label>
+        <span class="error" id="errorTerminos"></span>
+    </div>
+
+    <button type="submit">Crear Cuenta</button>
+
+</form>
+
+<div id="mensajeExito"></div>
+
+<div class="explicacion">
+    <h2>¿Qué se pretende entender aquí?</h2>
+    <p>Este ejemplo incluye la funcionalidad de alternar la visibilidad de la contraseña en JavaScript:</p>
+    <ul>
+        <li><strong>Cambio dinámico del atributo <code>type</code>:</strong> Con un simple <code>if</code> conmutamos entre <code>type="password"</code> (texto oculto con puntos) y <code>type="text"</code> (texto visible).</li>
+        <li><strong>Propiedad <code>type="button"</code>:</strong> Es fundamental añadir <code>type="button"</code> al botón secundario para evitar que actúe como envío del formulario por defecto.</li>
+        <li><strong>Actualización de interfaz:</strong> Cambiamos el texto del botón (<code>"Mostrar"</code> / <code>"Ocultar"</code>) según el estado actual del campo.</li>
+    </ul>
+</div>
+
+<script>
+const form = document.getElementById('formRegistro');
+
+const campoUsuario = document.getElementById('usuario');
+const campoEmail = document.getElementById('email');
+const campoEdad = document.getElementById('edad');
+const campoPassword = document.getElementById('password');
+const btnTogglePassword = document.getElementById('btnTogglePassword');
+const campoConfirmPassword = document.getElementById('confirmPassword');
+const campoPerfil = document.getElementById('perfil');
+const campoTerminos = document.getElementById('terminos');
+
+const errorUsuario = document.getElementById('errorUsuario');
+const errorEmail = document.getElementById('errorEmail');
+const errorEdad = document.getElementById('errorEdad');
+const errorPassword = document.getElementById('errorPassword');
+const errorConfirmPassword = document.getElementById('errorConfirmPassword');
+const errorPerfil = document.getElementById('errorPerfil');
+const errorTerminos = document.getElementById('errorTerminos');
+
+const mensajeExito = document.getElementById('mensajeExito');
+
+// Alternar visibilidad de la contraseña
+btnTogglePassword.addEventListener('click', function() {
+    if (campoPassword.type === 'password') {
+        campoPassword.type = 'text';
+        btnTogglePassword.textContent = 'Ocultar';
+    } else {
+        campoPassword.type = 'password';
+        btnTogglePassword.textContent = 'Mostrar';
+    }
+});
+
+// Función auxiliar para mostrar u ocultar errores
+function mostrarError(input, spanError, mensaje) {
+    if (mensaje) {
+        spanError.textContent = mensaje;
+        spanError.style.display = 'block';
+        input.classList.add('invalido');
+        return false;
+    } else {
+        spanError.style.display = 'none';
+        input.classList.remove('invalido');
+        return true;
+    }
+}
+
+// 1. Validar Usuario
+function validarUsuario() {
+    if (!campoUsuario.checkValidity()) {
+        return mostrarError(campoUsuario, errorUsuario, campoUsuario.validationMessage);
+    }
+    const valor = campoUsuario.value.trim().toLowerCase();
+    if (valor === 'admin' || valor === 'root') {
+        return mostrarError(campoUsuario, errorUsuario, 'El nombre "admin" o "root" no está permitido.');
+    }
+    return mostrarError(campoUsuario, errorUsuario, '');
+}
+
+// 2. Validar Email
+function validarEmail() {
+    if (!campoEmail.checkValidity()) {
+        return mostrarError(campoEmail, errorEmail, campoEmail.validationMessage);
+    }
+    const valor = campoEmail.value.trim().toLowerCase();
+    if (!valor.endsWith('@escuela.com')) {
+        return mostrarError(campoEmail, errorEmail, 'El correo debe pertenecer a @escuela.com');
+    }
+    return mostrarError(campoEmail, errorEmail, '');
+}
+
+// 3. Validar Edad
+function validarEdad() {
+    if (!campoEdad.checkValidity()) {
+        return mostrarError(campoEdad, errorEdad, campoEdad.validationMessage);
+    }
+    const edad = parseInt(campoEdad.value, 10);
+    if (edad < 18) {
+        return mostrarError(campoEdad, errorEdad, 'Debes ser mayor de edad (al menos 18 años).');
+    }
+    return mostrarError(campoEdad, errorEdad, '');
+}
+
+// 4. Validar Contraseña
+function validarPassword() {
+    if (!campoPassword.checkValidity()) {
+        return mostrarError(campoPassword, errorPassword, campoPassword.validationMessage);
+    }
+    if (campoConfirmPassword.value !== '') {
+        validarConfirmPassword();
+    }
+    return mostrarError(campoPassword, errorPassword, '');
+}
+
+// 5. Validar Confirmación de Contraseña
+function validarConfirmPassword() {
+    if (!campoConfirmPassword.checkValidity()) {
+        return mostrarError(campoConfirmPassword, errorConfirmPassword, campoConfirmPassword.validationMessage);
+    }
+    if (campoConfirmPassword.value !== campoPassword.value) {
+        return mostrarError(campoConfirmPassword, errorConfirmPassword, 'Las contraseñas no coinciden.');
+    }
+    return mostrarError(campoConfirmPassword, errorConfirmPassword, '');
+}
+
+// 6. Validar Perfil (Select)
+function validarPerfil() {
+    if (!campoPerfil.checkValidity()) {
+        return mostrarError(campoPerfil, errorPerfil, 'Debes seleccionar un perfil.');
+    }
+    return mostrarError(campoPerfil, errorPerfil, '');
+}
+
+// 7. Validar Términos y Condiciones (Checkbox)
+function validarTerminos() {
+    if (!campoTerminos.checkValidity()) {
+        return mostrarError(campoTerminos, errorTerminos, 'Debes aceptar los términos y condiciones para continuar.');
+    }
+    return mostrarError(campoTerminos, errorTerminos, '');
+}
+
+// EVENTOS BLUR (al salir de los campos de texto)
+campoUsuario.addEventListener('blur', validarUsuario);
+campoEmail.addEventListener('blur', validarEmail);
+campoEdad.addEventListener('blur', validarEdad);
+campoPassword.addEventListener('blur', validarPassword);
+campoConfirmPassword.addEventListener('blur', validarConfirmPassword);
+campoPerfil.addEventListener('blur', validarPerfil);
+
+// EVENTO CHANGE (para el checkbox de términos)
+campoTerminos.addEventListener('change', validarTerminos);
+
+// EVENTO SUBMIT
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Validamos todos los campos a la vez
+    const okUsuario = validarUsuario();
+    const okEmail = validarEmail();
+    const okEdad = validarEdad();
+    const okPassword = validarPassword();
+    const okConfirm = validarConfirmPassword();
+    const okPerfil = validarPerfil();
+    const okTerminos = validarTerminos();
+
+    if (okUsuario && okEmail && okEdad && okPassword && okConfirm && okPerfil && okTerminos) {
+        mensajeExito.textContent = '¡Registro completado con éxito!';
+        form.reset();
+        // Restaurar estado visual del botón toggle
+        campoPassword.type = 'password';
+        btnTogglePassword.textContent = 'Mostrar';
+    } else {
+        mensajeExito.textContent = '';
+    }
+});
+</script>
+
+</body>
+</html>
+

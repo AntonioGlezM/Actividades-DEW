@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Validación con API Constraint Validation (checkValidity)</title>
+<style>
+    body { 
+        font-family: sans-serif; 
+        margin: 40px; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        width: 300px;
+    }
+    label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    input {
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    /* Estilos para mensajes de error */
+    .error {
+        color: #d9534f;
+        font-size: 12px;
+        margin-top: 4px;
+        display: none;
+    }
+    input.invalido {
+        border-color: #d9534f;
+        background-color: #fdf2f2;
+    }
+    button {
+        padding: 10px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 300px;
+    }
+    #mensajeExito {
+        margin-top: 20px;
+        color: #28a745;
+        font-weight: bold;
+    }
+    .explicacion {
+        margin-top: 30px;
+        max-width: 500px;
+        text-align: left;
+        background-color: #eef6ff;
+        border-left: 4px solid #007bff;
+        padding: 15px 20px;
+        border-radius: 4px;
+    }
+    .explicacion h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #0056b3;
+    }
+    .explicacion ul {
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+    .explicacion li {
+        margin-bottom: 8px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Validación con checkValidity() y validity</h1>
+
+<form id="miFormulario">
+    <div class="form-group">
+        <label for="nombre">Nombre (mínimo 3 caracteres):</label>
+        <input type="text" id="nombre" name="nombre" required minlength="3">
+        <span class="error" id="errorNombre"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="email">Correo Electrónico:</label>
+        <input type="email" id="email" name="email" required>
+        <span class="error" id="errorEmail"></span>
+    </div>
+
+    <button type="submit">Enviar Registro</button>
+</form>
+
+<div id="mensajeExito"></div>
+
+<div class="explicacion">
+    <h2>¿Qué se pretende entender aquí?</h2>
+    <p>Este ejemplo utiliza la API nativa de JavaScript <strong>Constraint Validation</strong> para gestionar errores sin lógica manual:</p>
+    <ul>
+        <li><strong><code>checkValidity()</code>:</strong> Devuelve <code>true</code> si el campo cumple con todos sus atributos HTML (<code>required</code>, <code>minlength</code>, <code>type</code>) y <code>false</code> si incumple alguno.</li>
+        <li><strong>Propiedad <code>validity</code>:</strong> Objeto que indica la razón exacta del fallo (por ejemplo, <code>e.target.validity.valueMissing</code> si está vacío o <code>tooShort</code> si falta longitud).</li>
+        <li><strong><code>validationMessage</code>:</strong> Contiene el mensaje de error oficial del navegador adaptado al idioma del usuario.</li>
+    </ul>
+</div>
+
+<script>
+const formulario = document.getElementById('miFormulario');
+const campoNombre = document.getElementById('nombre');
+const campoEmail = document.getElementById('email');
+
+const errorNombre = document.getElementById('errorNombre');
+const errorEmail = document.getElementById('errorEmail');
+const mensajeExito = document.getElementById('mensajeExito');
+
+// Función genérica para comprobar la validez de un campo individual
+function comprobarCampo(e) {
+    const input = e.target;
+    let contenedorError;
+
+    if (input.id === 'nombre') {
+        contenedorError = errorNombre;
+    } else if (input.id === 'email') {
+        contenedorError = errorEmail;
+    }
+
+    // Usamos el método nativo checkValidity() del input
+    if (!input.checkValidity()) {
+        // Obtenemos el mensaje de error nativo del propio elemento
+        contenedorError.textContent = input.validationMessage;
+        contenedorError.style.display = 'block';
+        input.classList.add('invalido');
+        return false;
+    } else {
+        contenedorError.style.display = 'none';
+        input.classList.remove('invalido');
+        return true;
+    }
+}
+
+// 1. Eventos BLUR usando la API nativa
+campoNombre.addEventListener('blur', comprobarCampo);
+campoEmail.addEventListener('blur', comprobarCampo);
+
+// 2. Evento SUBMIT usando checkValidity() en el formulario completo
+formulario.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Comprobamos la validez de todo el formulario
+    if (formulario.checkValidity()) {
+        mensajeExito.textContent = '¡Formulario enviado correctamente!';
+        formulario.reset();
+    } else {
+        mensajeExito.textContent = '';
+    }
+});
+</script>
+
+</body>
+</html>

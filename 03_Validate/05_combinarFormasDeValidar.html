@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Validación Mixta: API Nativa + Lógica Manual Sencilla</title>
+<style>
+    body { 
+        font-family: sans-serif; 
+        margin: 40px; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        width: 320px;
+    }
+    label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    input {
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .error {
+        color: #d9534f;
+        font-size: 12px;
+        margin-top: 4px;
+        display: none;
+    }
+    input.invalido {
+        border-color: #d9534f;
+        background-color: #fdf2f2;
+    }
+    button {
+        padding: 10px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 320px;
+    }
+    #mensajeExito {
+        margin-top: 20px;
+        color: #28a745;
+        font-weight: bold;
+    }
+    .explicacion {
+        margin-top: 30px;
+        max-width: 520px;
+        text-align: left;
+        background-color: #eef6ff;
+        border-left: 4px solid #007bff;
+        padding: 15px 20px;
+        border-radius: 4px;
+    }
+    .explicacion h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #0056b3;
+    }
+    .explicacion ul {
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+    .explicacion li {
+        margin-bottom: 8px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Validación Mixta (Sin Expresiones Regulares)</h1>
+
+<form id="miFormulario" novalidate>
+    <div class="form-group">
+        <label for="nombre">Nombre de usuario:</label>
+        <input type="text" id="nombre" name="nombre" required minlength="3">
+        <span class="error" id="errorNombre"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="email">Correo Electrónico:</label>
+        <input type="email" id="email" name="email" required>
+        <span class="error" id="errorEmail"></span>
+    </div>
+
+    <button type="submit">Enviar Registro</button>
+</form>
+
+<div id="mensajeExito"></div>
+
+<div class="explicacion">
+    <h2>¿Qué se pretende entender aquí?</h2>
+    <p>Este ejemplo demuestra la combinación de validación nativa y comprobaciones manuales con métodos básicos de texto:</p>
+    <ul>
+        <li><strong>Filtro 1 (API Nativa):</strong> <code>checkValidity()</code> comprueba primero los atributos HTML5 (campo obligatorio, longitud mínima y estructura básica de email).</li>
+        <li><strong>Filtro 2 (Lógica Manual con Métodos Básicos):</strong> Usamos métodos estándar de cadenas como <code>includes()</code> o <code>endsWith()</code> en lugar de expresiones regulares avanzadas.</li>
+        <li><strong>Facilidad de lectura:</strong> Las condiciones quedan completamente comprensibles para los alumnos utilizando comparaciones simples de texto.</li>
+    </ul>
+</div>
+
+<script>
+const formulario = document.getElementById('miFormulario');
+const campoNombre = document.getElementById('nombre');
+const campoEmail = document.getElementById('email');
+
+const errorNombre = document.getElementById('errorNombre');
+const errorEmail = document.getElementById('errorEmail');
+const mensajeExito = document.getElementById('mensajeExito');
+
+// Validación Mixta para el Nombre
+function validarNombre() {
+    // 1. Filtro Nativo
+    if (!campoNombre.checkValidity()) {
+        errorNombre.textContent = campoNombre.validationMessage;
+        errorNombre.style.display = 'block';
+        campoNombre.classList.add('invalido');
+        return false;
+    }
+
+    // 2. Filtro Manual (Sin RegEx)
+    const valor = campoNombre.value.trim().toLowerCase();
+    
+    // Regla propia: No permitir el nombre de usuario "admin"
+    if (valor === 'admin') {
+        errorNombre.textContent = 'El nombre "admin" está reservado.';
+        errorNombre.style.display = 'block';
+        campoNombre.classList.add('invalido');
+        return false;
+    }
+
+    errorNombre.style.display = 'none';
+    campoNombre.classList.remove('invalido');
+    return true;
+}
+
+// Validación Mixta para el Email
+function validarEmail() {
+    // 1. Filtro Nativo (Comprueba la estructura general del email)
+    if (!campoEmail.checkValidity()) {
+        errorEmail.textContent = campoEmail.validationMessage;
+        errorEmail.style.display = 'block';
+        campoEmail.classList.add('invalido');
+        return false;
+    }
+
+    // 2. Filtro Manual con método básico endsWith()
+    const valor = campoEmail.value.trim().toLowerCase();
+    if (!valor.endsWith('@escuela.com')) {
+        errorEmail.textContent = 'El correo debe ser de dominio @escuela.com';
+        errorEmail.style.display = 'block';
+        campoEmail.classList.add('invalido');
+        return false;
+    }
+
+    errorEmail.style.display = 'none';
+    campoEmail.classList.remove('invalido');
+    return true;
+}
+
+// Eventos BLUR
+campoNombre.addEventListener('blur', validarNombre);
+campoEmail.addEventListener('blur', validarEmail);
+
+// Evento SUBMIT
+formulario.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const nombreOk = validarNombre();
+    const emailOk = validarEmail();
+
+    if (nombreOk && emailOk) {
+        mensajeExito.textContent = '¡Formulario enviado correctamente!';
+        formulario.reset();
+    } else {
+        mensajeExito.textContent = '';
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Validación Básica de Formulario</title>
+<style>
+    body { 
+        font-family: sans-serif; 
+        margin: 40px; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        width: 300px;
+    }
+    label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    input {
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    /* Estilos para mensajes de error */
+    .error {
+        color: #d9534f;
+        font-size: 12px;
+        margin-top: 4px;
+        display: none;
+    }
+    input.invalido {
+        border-color: #d9534f;
+        background-color: #fdf2f2;
+    }
+    button {
+        padding: 10px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 300px;
+    }
+    #mensajeExito {
+        margin-top: 20px;
+        color: #28a745;
+        font-weight: bold;
+    }
+    .explicacion {
+        margin-top: 30px;
+        max-width: 500px;
+        text-align: left;
+        background-color: #eef6ff;
+        border-left: 4px solid #007bff;
+        padding: 15px 20px;
+        border-radius: 4px;
+    }
+    .explicacion h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #0056b3;
+    }
+    .explicacion ul {
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+    .explicacion li {
+        margin-bottom: 8px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Validación con Eventos blur y submit</h1>
+
+<form id="miFormulario" novalidate>
+    <div class="form-group">
+        <label for="nombre">Nombre (mínimo 3 caracteres):</label>
+        <input type="text" id="nombre" name="nombre">
+        <span class="error" id="errorNombre">El nombre debe tener al menos 3 caracteres.</span>
+    </div>
+
+    <div class="form-group">
+        <label for="email">Correo Electrónico:</label>
+        <input type="email" id="email" name="email">
+        <span class="error" id="errorEmail">Por favor, introduce un correo válido.</span>
+    </div>
+
+    <button type="submit">Enviar Registro</button>
+</form>
+
+<div id="mensajeExito"></div>
+
+<div class="explicacion">
+    <h2>¿Qué se pretende entender aquí?</h2>
+    <p>Este ejemplo muestra cómo controlar la validación de un formulario paso a paso con JavaScript:</p>
+    <ul>
+        <li><strong>Atributo <code>novalidate</code>:</strong> Desactiva las alertas por defecto del navegador para usar nuestra propia lógica y estilos.</li>
+        <li><strong>Evento <code>blur</code>:</strong> Comprueba la validez de un campo individual en cuanto el usuario hace clic fuera de él.</li>
+        <li><strong>Evento <code>submit</code> y <code>e.preventDefault()</code>:</strong> Detiene el envío automático del formulario para validar todos los campos a la vez.</li>
+        <li><strong>Feedback visual:</strong> Mostramos/ocultamos mensajes de error manipulando la clase CSS y el atributo <code>style.display</code>.</li>
+    </ul>
+</div>
+
+<script>
+const formulario = document.getElementById('miFormulario');
+const campoNombre = document.getElementById('nombre');
+const campoEmail = document.getElementById('email');
+
+const errorNombre = document.getElementById('errorNombre');
+const errorEmail = document.getElementById('errorEmail');
+const mensajeExito = document.getElementById('mensajeExito');
+
+// 1. Funciones de validaciones individuales
+function validarNombre() {
+    if (campoNombre.value.trim().length < 3) {
+        errorNombre.style.display = 'block';
+        campoNombre.classList.add('invalido');
+        return false;
+    } else {
+        errorNombre.style.display = 'none';
+        campoNombre.classList.remove('invalido');
+        return true;
+    }
+}
+
+function validarEmail() {
+    // Comprobación básica: debe contener una '@' y un '.'
+    const valor = campoEmail.value.trim();
+    if (!valor.includes('@') || !valor.includes('.')) {
+        errorEmail.style.display = 'block';
+        campoEmail.classList.add('invalido');
+        return false;
+    } else {
+        errorEmail.style.display = 'none';
+        campoEmail.classList.remove('invalido');
+        return true;
+    }
+}
+
+// 2. Eventos BLUR (Validar al salir del campo)
+campoNombre.addEventListener('blur', validarNombre);
+campoEmail.addEventListener('blur', validarEmail);
+
+// 3. Evento SUBMIT (Validar todo al intentar enviar)
+formulario.addEventListener('submit', function(e) {
+    // Evitar que la página se recargue
+    e.preventDefault();
+
+    // Ejecutar ambas validaciones
+    const nombreValido = validarNombre();
+    const emailValido = validarEmail();
+
+    // Si ambos campos son válidos
+    if (nombreValido && emailValido) {
+        mensajeExito.textContent = '¡Formulario enviado correctamente!';
+        formulario.reset();
+    } else {
+        mensajeExito.textContent = '';
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Registro Interactivo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        form {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 380px;
+        }
+
+        .grupo {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 15px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #007bff;
+        }
+
+        /* Clase que activará JavaScript cuando un campo sea inválido */
+        .invalido {
+            border-color: #d9534f !important;
+            background-color: #fff5f5;
+        }
+
+        /* Mensaje de error: oculto hasta que JavaScript lo muestre */
+        .error {
+            display: none;
+            color: #d9534f;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* Campo de contraseña y botón de mostrar/ocultar en la misma fila */
+        .fila-password {
+            display: flex;
+            gap: 8px;
+        }
+
+        .fila-password input {
+            flex: 1;
+        }
+
+        #btnVerPassword {
+            padding: 0 12px;
+            border: 2px solid #007bff;
+            background-color: #ffffff;
+            color: #007bff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .grupo-check label {
+            display: inline;
+            font-weight: normal;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #mensajeExito {
+            margin-top: 16px;
+            color: #28a745;
+            font-weight: bold;
+            min-height: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Registro de Usuario</h1>
+
+    <!-- novalidate: desactiva los avisos del navegador; los errores los mostramos nosotros con JavaScript -->
+    <form id="formRegistro" novalidate>
+
+        <div class="grupo">
+            <label for="usuario">Usuario:</label>
+            <input type="text" id="usuario" name="usuario" required minlength="3">
+            <span class="error" id="errorUsuario"></span>
+        </div>
+
+        <div class="grupo">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <span class="error" id="errorEmail"></span>
+        </div>
+
+        <div class="grupo">
+            <label for="edad">Edad:</label>
+            <input type="number" id="edad" name="edad" required>
+            <span class="error" id="errorEdad"></span>
+        </div>
+
+        <div class="grupo">
+            <label for="password">Contraseña:</label>
+            <div class="fila-password">
+                <input type="password" id="password" name="password" required minlength="6">
+                <button type="button" id="btnVerPassword">Mostrar</button>
+            </div>
+            <span class="error" id="errorPassword"></span>
+        </div>
+
+        <div class="grupo">
+            <label for="password2">Confirmar contraseña:</label>
+            <input type="password" id="password2" name="password2" required>
+            <span class="error" id="errorPassword2"></span>
+        </div>
+
+        <div class="grupo">
+            <label for="perfil">Perfil:</label>
+            <select id="perfil" name="perfil" required>
+                <option value="">-- Selecciona un perfil --</option>
+                <option value="alumno">Alumno</option>
+                <option value="profesor">Profesor</option>
+                <option value="familia">Familia</option>
+            </select>
+            <span class="error" id="errorPerfil"></span>
+        </div>
+
+        <div class="grupo grupo-check">
+            <input type="checkbox" id="terminos" name="terminos" required>
+            <label for="terminos">Acepto los términos y condiciones</label>
+            <span class="error" id="errorTerminos"></span>
+        </div>
+
+        <button type="submit">Registrarme</button>
+    </form>
+
+    <div id="mensajeExito"></div>
+
+    <script>
+
+        // ==================================================
+        // 0. REFERENCIAS AL DOM
+        // ==================================================
+
+        const form = document.getElementById('formRegistro');
+
+        const campoUsuario = document.getElementById('usuario');
+        const campoEmail = document.getElementById('email');
+        const campoEdad = document.getElementById('edad');
+        const campoPassword = document.getElementById('password');
+        const btnTogglePassword = document.getElementById('btnVerPassword');
+        const campoConfirmPassword = document.getElementById('password2');
+        const campoPerfil = document.getElementById('perfil');
+        const campoTerminos = document.getElementById('terminos');
+
+        const errorUsuario = document.getElementById('errorUsuario');
+        const errorEmail = document.getElementById('errorEmail');
+        const errorEdad = document.getElementById('errorEdad');
+        const errorPassword = document.getElementById('errorPassword');
+        const errorPassword2 = document.getElementById('errorPassword2');
+        const errorPerfil = document.getElementById('errorPerfil');
+        const errorTerminos = document.getElementById('errorTerminos');
+
+        const mensajeExito = document.getElementById('mensajeExito');
+
+
+        // ==================================================
+        // 1. FUNCIÓN AUXILIAR: MOSTRAR / LIMPIAR ERROR
+        // ==================================================
+
+        // Muestra el mensaje de error de un campo y lo marca en rojo
+        function mostrarError(campo, spanError, mensaje) {
+            spanError.textContent = mensaje;
+            spanError.style.display = 'block';
+            campo.classList.add('invalido');
+            return false;
+        }
+
+        // Oculta el error de un campo y le quita la marca roja
+        function limpiarError(campo, spanError) {
+            spanError.style.display = 'none';
+            campo.classList.remove('invalido');
+            return true;
+        }
+
+        // ==================================================
+        // 2. VALIDACIÓN DEL USUARIO (blur)
+        // ==================================================
+        
+        function validarUsuario() {
+            // Filtro 1
+            if (!campoUsuario.checkValidity()) {
+                return mostrarError(campoUsuario, errorUsuario, campoUsuario.validationMessage);
+            }
+            // Filtro 2: palabras reservadas
+            const valor = campoUsuario.value.trim().toLowerCase();
+            if (valor === 'admin' || valor === 'root') {
+                return mostrarError(campoUsuario, errorUsuario, 'Ese nombre de usuario está reservado.');
+            }
+            return limpiarError(campoUsuario, errorUsuario);
+        }
+
+        campoUsuario.addEventListener('blur', validarUsuario);
+
+        // ==================================================
+        // 3. VALIDACIÓN DE EMAIL Y EDAD (blur)
+        // ==================================================
+
+        function validarEmail() {
+            if (!campoEmail.checkValidity()) {
+                return mostrarError(campoEmail, errorEmail, campoEmail.validationMessage);
+            }
+            // Filtro manual: dominio escolar concreto
+            const valor = campoEmail.value.trim().toLowerCase();
+            if (!valor.endsWith('@escuela.com')) {
+                return mostrarError(campoEmail, errorEmail, 'El correo debe ser del dominio @escuela.com');
+            }
+            return limpiarError(campoEmail, errorEmail);
+        }
+
+        function validarEdad() {
+            if (!campoEdad.checkValidity()) {
+                return mostrarError(campoEdad, errorEdad, campoEdad.validationMessage);
+            }
+            // Filtro manual: mayor de edad (el value es texto, lo pasamos a número)
+            const edad = parseInt(campoEdad.value, 10);
+            if (edad < 18) {
+                return mostrarError(campoEdad, errorEdad, 'Debes tener al menos 18 años.');
+            }
+            return limpiarError(campoEdad, errorEdad);
+        }
+
+        campoEmail.addEventListener('blur', validarEmail);
+        campoEdad.addEventListener('blur', validarEdad);
+
+        // ==================================================
+        // 4. CONTRASEÑAS: VALIDACIÓN Y COINCIDENCIA (blur)
+        // ==================================================
+        function validarPassword() {
+            if (!campoPassword.checkValidity()) {
+                return mostrarError(campoPassword, errorPassword, campoPassword.validationMessage);
+            }
+            // Si ya hay algo en la confirmación, se vuelve a comprobar la coincidencia
+            if (campoConfirmPassword.value !== '') {
+                validarConfirmPassword();
+            }
+            return limpiarError(campoPassword, errorPassword);
+        }
+
+        function validarConfirmPassword() {
+            if (!campoConfirmPassword.checkValidity()) {
+                return mostrarError(campoConfirmPassword, errorConfirmPassword, campoConfirmPassword.validationMessage);
+            }
+            // Filtro manual
+            if (campoConfirmPassword.value !== campoPassword.value) {
+                return mostrarError(campoConfirmPassword, errorConfirmPassword, 'Las contraseñas no coinciden.');
+            }
+            return limpiarError(campoConfirmPassword, errorConfirmPassword);
+        }
+
+        campoPassword.addEventListener('blur', validarPassword);
+        campoConfirmPassword.addEventListener('blur', validarConfirmPassword);
+
+        // ==================================================
+        // 5. CONTROLES EXTRA: VER CONTRASEÑA, PERFIL Y TÉRMINOS
+        // ==================================================
+
+        // Alterna entre ocultar y mostrar la contraseña
+        btnTogglePassword.addEventListener('click', function () {
+            if (campoPassword.type === 'password') {
+                campoPassword.type = 'text';
+                btnTogglePassword.textContent = 'Ocultar';
+            } else {
+                campoPassword.type = 'password';
+                btnTogglePassword.textContent = 'Mostrar';
+            }
+        });
+
+        function validarPerfil() {
+            // Si no se ha elegido perfil, el required nativo falla
+            if (!campoPerfil.checkValidity()) {
+                return mostrarError(campoPerfil, errorPerfil, 'Debes seleccionar un perfil.');
+            }
+            return limpiarError(campoPerfil, errorPerfil);
+        }
+
+        function validarTerminos() {
+            // Un checkbox required solo es válido si está marcado
+            if (!campoTerminos.checkValidity()) {
+                return mostrarError(campoTerminos, errorTerminos, 'Debes aceptar los términos y condiciones.');
+            }
+            return limpiarError(campoTerminos, errorTerminos);
+        }
+
+        // blur: avisa si se sale sin elegir; change: limpia el error en cuanto se elige
+        campoPerfil.addEventListener('blur', validarPerfil);
+        campoPerfil.addEventListener('change', validarPerfil);
+        campoTerminos.addEventListener('change', validarTerminos);
+
+        // ==================================================
+        // 6. ENVÍO DEL FORMULARIO (submit)
+        // ==================================================
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); 
+
+            // Se ejecutan todas las validaciones; si alguna falla, no se envía 
+            const okUsuario = validarUsuario();
+            const okEmail = validarEmail();
+            const okEdad = validarEdad();
+            const okPassword = validarPassword();
+            const okConfirm = validarConfirmPassword();
+            const okPerfil = validarPerfil();
+            const okTerminos = validarTerminos();
+
+            if (okUsuario && okEmail && okEdad && okPassword && okConfirm && okPerfil && okTerminos) {
+                mensajeExito.textContent = '¡Registro completado con éxito!';
+                form.reset();
+                // Restaurar el estado del botón de ver contraseña
+                campoPassword.type = 'password';
+                btnTogglePassword.textContent = 'Mostrar';
+            } else {
+                mensajeExito.textContent = '';
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>

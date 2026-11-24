@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloque 3: Mensajes Personalizados con setCustomValidity()</title>
+<style>
+    body { 
+        font-family: sans-serif; 
+        margin: 40px; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        width: 320px;
+    }
+    label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    input {
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .error {
+        color: #d9534f;
+        font-size: 12px;
+        margin-top: 4px;
+        display: none;
+    }
+    input.invalido {
+        border-color: #d9534f;
+        background-color: #fdf2f2;
+    }
+    button {
+        padding: 10px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 320px;
+    }
+    #mensajeExito {
+        margin-top: 20px;
+        color: #28a745;
+        font-weight: bold;
+    }
+    .explicacion {
+        margin-top: 30px;
+        max-width: 520px;
+        text-align: left;
+        background-color: #eef6ff;
+        border-left: 4px solid #007bff;
+        padding: 15px 20px;
+        border-radius: 4px;
+    }
+    .explicacion h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #0056b3;
+    }
+    .explicacion ul {
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+    .explicacion li {
+        margin-bottom: 8px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Bloque 3: Uso de setCustomValidity()</h1>
+
+<form id="miFormulario" novalidate>
+    <div class="form-group">
+        <label for="nombre">Nombre (mínimo 3 caracteres):</label>
+        <input type="text" id="nombre" name="nombre" required minlength="3">
+        <span class="error" id="errorNombre"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="email">Correo Electrónico:</label>
+        <input type="email" id="email" name="email" required>
+        <span class="error" id="errorEmail"></span>
+    </div>
+
+    <button type="submit">Enviar Registro</button>
+</form>
+
+<div id="mensajeExito"></div>
+
+<div class="explicacion">
+    <h2>¿Qué se pretende entender aquí?</h2>
+    <p>Este ejemplo enseña a controlar los mensajes de la API de validación nativa usando <code>setCustomValidity()</code>:</p>
+    <ul>
+        <li><strong>Definir mensaje propio:</strong> Con <code>input.setCustomValidity("Tu mensaje")</code> reemplazamos el texto genérico del navegador por uno personalizado y cercano para el alumno.</li>
+        <li><strong>Regla de oro:</strong> Si le pasas un texto distinto de vacío <code>""</code>, el navegador considerará automáticamente que el campo es <strong>inválido</strong>.</li>
+        <li><strong>Limpiar el error:</strong> Es indispensable llamar a <code>input.setCustomValidity("")</code> cuando la entrada sea correcta; de lo contrario, el campo quedará marcado como inválido para siempre.</li>
+        <li><strong>Lectura limpia:</strong> Tras establecer o limpiar el mensaje personalizado, <code>input.validationMessage</code> contendrá exactamente nuestro texto.</li>
+    </ul>
+</div>
+
+<script>
+const formulario = document.getElementById('miFormulario');
+const campoNombre = document.getElementById('nombre');
+const campoEmail = document.getElementById('email');
+
+const errorNombre = document.getElementById('errorNombre');
+const errorEmail = document.getElementById('errorEmail');
+const mensajeExito = document.getElementById('mensajeExito');
+
+// 1. Asignar mensajes personalizados usando la propiedad validity
+function validarCampoNombre() {
+    // Inspeccionamos la propiedad nativa validity
+    if (campoNombre.validity.valueMissing) {
+        campoNombre.setCustomValidity('¡El nombre es obligatorio! No lo dejes en blanco.');
+    } else if (campoNombre.validity.tooShort) {
+        campoNombre.setCustomValidity('El nombre es demasiado corto. Escribe al menos 3 caracteres.');
+    } else {
+        // IMPORTANTE: Limpiar el mensaje si todo está bien
+        campoNombre.setCustomValidity('');
+    }
+
+    // Actualizamos la interfaz gráfica
+    return actualizarInterfaz(campoNombre, errorNombre);
+}
+
+function validarCampoEmail() {
+    if (campoEmail.validity.valueMissing) {
+        campoEmail.setCustomValidity('Necesitamos tu correo para registrarte.');
+    } else if (campoEmail.validity.typeMismatch) {
+        campoEmail.setCustomValidity('El formato no parece correcto. Ejemplo: usuario@dominio.com');
+    } else {
+        campoEmail.setCustomValidity('');
+    }
+
+    return actualizarInterfaz(campoEmail, errorEmail);
+}
+
+// Función auxiliar para mostrar/ocultar el mensaje en el HTML
+function actualizarInterfaz(input, contenedorError) {
+    if (!input.checkValidity()) {
+        contenedorError.textContent = input.validationMessage;
+        contenedorError.style.display = 'block';
+        input.classList.add('invalido');
+        return false;
+    } else {
+        contenedorError.style.display = 'none';
+        input.classList.remove('invalido');
+        return true;
+    }
+}
+
+// 2. Eventos BLUR (al salir de cada input)
+campoNombre.addEventListener('blur', validarCampoNombre);
+campoEmail.addEventListener('blur', validarCampoEmail);
+
+// 3. Evento SUBMIT
+formulario.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const nombreValido = validarCampoNombre();
+    const emailValido = validarCampoEmail();
+
+    if (nombreValido && emailValido) {
+        mensajeExito.textContent = '¡Formulario enviado correctamente!';
+        formulario.reset();
+    } else {
+        mensajeExito.textContent = '';
+    }
+});
+</script>
+
+</body>
+</html>
